@@ -1,9 +1,11 @@
 package com.seckillproject.controller;
 
 
+import com.seckillproject.controller.viewobject.UserVO;
 import com.seckillproject.dataobject.UserDO;
 import com.seckillproject.service.UserService;
 import com.seckillproject.service.model.UserModel;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,17 @@ public class UserController {
 
     @RequestMapping("/get")
     @ResponseBody
-    public UserModel getUser(@RequestParam(name = "id") Integer id) {
-        return userService.getUserById(id);
+    public UserVO getUser(@RequestParam(name = "id") Integer id) {
+        UserModel userModel = userService.getUserById(id);
+        return convertFromModel(userModel);
+    }
+
+    private UserVO convertFromModel(UserModel userModel) {
+        if (userModel == null) {
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(userModel, userVO);
+        return userVO;
     }
 }
