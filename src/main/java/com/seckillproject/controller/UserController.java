@@ -3,6 +3,9 @@ package com.seckillproject.controller;
 
 import com.seckillproject.controller.viewobject.UserVO;
 import com.seckillproject.dataobject.UserDO;
+import com.seckillproject.error.BusinessException;
+import com.seckillproject.error.EmBusinessError;
+import com.seckillproject.response.CommonReturnType;
 import com.seckillproject.service.UserService;
 import com.seckillproject.service.model.UserModel;
 import org.springframework.beans.BeanUtils;
@@ -22,9 +25,13 @@ public class UserController {
 
     @RequestMapping("/get")
     @ResponseBody
-    public UserVO getUser(@RequestParam(name = "id") Integer id) {
+    public CommonReturnType getUser(@RequestParam(name = "id") Integer id) throws BusinessException {
         UserModel userModel = userService.getUserById(id);
-        return convertFromModel(userModel);
+        if (userModel == null) {
+            throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
+        }
+        UserVO userVO = convertFromModel(userModel);
+        return CommonReturnType.create(userVO);
     }
 
     private UserVO convertFromModel(UserModel userModel) {
